@@ -1,0 +1,14 @@
+{
+  "name": "@mike_f/list-deps",
+  "version": "0.1.0",
+  "description": "List dependencies referenced from a root file",
+  "main": "index.js",
+  "bin": "bin.js",
+  "keywords": ["dependecies", "debugging", "tools"],
+  "author": "Mike Farquhar <michaelfarquhar1991@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^9.4.0"
+  }
+}
