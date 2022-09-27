@@ -35,9 +35,9 @@ function listDeps(rootFilePath, extensions = ['js']) {
 function followDependencies(context, modulePath) {
     const [filePath, fileText] = loadFile(context, modulePath);
 
-    const importRegexp = /(import|export)(.*from)? ['"](.*)['"]/g;
-    const dynamicImportRegexp = /import\(['"`](.*)['"`]\)/g;
-    const requireRegexp = /require\(['"`](.*)['"`]\)/g;
+    const importRegexp = /(import|export)([\s\S]*?from)? ['"](.*)['"]/g;
+    const dynamicImportRegexp = /import\(\s*['"`](.*)['"`]\s*\)/g;
+    const requireRegexp = /require\(\s*['"`](.*)['"`]\s*\)/g;
 
     const currentFolder = path.dirname(filePath);
 
