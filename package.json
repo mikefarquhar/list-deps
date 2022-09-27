@@ -6,6 +6,14 @@
   "bin": "bin.js",
   "keywords": ["dependecies", "debugging", "tools"],
   "author": "Mike Farquhar <michaelfarquhar1991@gmail.com>",
+  "homepage": "https://github.com/mikefarquhar/list-deps",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikefarquhar/list-deps.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mikefarquhar/list-deps/issues"
+  },
   "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.2",
