@@ -1,6 +1,6 @@
 {
   "name": "@mike_f/list-deps",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "List dependencies referenced from a root file",
   "main": "index.js",
   "bin": "bin.js",

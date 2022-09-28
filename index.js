@@ -1,6 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
+const singleLineCommentRegexp = /\/\/.*/g;
+const multiLineCommentRegexp = /\/\*[\s\S]*?\*\//g;
+const importRegexp = /(?:import|export)(?:[\s\S]*?from)?\s*['"](.*)['"]/g;
+const dynamicImportRegexp = /import\(\s*['"`](.*)['"`]\s*\)/g;
+const requireRegexp = /require\(\s*['"`](.*)['"`]\s*\)/g;
+
 /**
  * Extract the list of dependencies accessible from a root file.
  * 
@@ -35,16 +41,12 @@ function listDeps(rootFilePath, extensions = ['js']) {
 function followDependencies(context, modulePath) {
     const [filePath, fileText] = loadFile(context, modulePath);
 
-    const importRegexp = /(import|export)([\s\S]*?from)? ['"](.*)['"]/g;
-    const dynamicImportRegexp = /import\(\s*['"`](.*)['"`]\s*\)/g;
-    const requireRegexp = /require\(\s*['"`](.*)['"`]\s*\)/g;
-
     const currentFolder = path.dirname(filePath);
 
     for (const relativeImport of iterAll(
-        processImports(context, importRegexp, 3, fileText),
-        processImports(context, dynamicImportRegexp, 1, fileText),
-        processImports(context, requireRegexp, 1, fileText),
+        processImports(context, importRegexp, fileText),
+        processImports(context, dynamicImportRegexp, fileText),
+        processImports(context, requireRegexp, fileText),
     )) {
         const referencedModulePath = path.join(currentFolder, relativeImport);
         followDependencies(context, referencedModulePath);
@@ -54,7 +56,10 @@ function followDependencies(context, modulePath) {
 function loadFile(context, modulePath) {
     for (const filePath of pathVariants(context, modulePath)) {
         try {
-            const fileText = fs.readFileSync(filePath, 'utf-8');
+            const fileText = fs.readFileSync(filePath, 'utf-8')
+                .replaceAll(singleLineCommentRegexp, '')
+                .replaceAll(multiLineCommentRegexp, '');
+
             return [filePath, fileText];
         } catch { /* ignore */ }
     }
@@ -82,9 +87,9 @@ function* iterAll(...iterables) {
     }
 }
 
-function* processImports(context, regexp, matchIndex, fileText) {
+function* processImports(context, regexp, fileText) {
     for (const match of fileText.matchAll(regexp)) {
-        const imported = match[matchIndex];
+        const imported = match[1];
 
         if (imported.startsWith('.')) {
             yield imported;
