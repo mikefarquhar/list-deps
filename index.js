@@ -3,7 +3,8 @@ const path = require('path');
 
 const singleLineCommentRegexp = /\/\/.*/g;
 const multiLineCommentRegexp = /\/\*[\s\S]*?\*\//g;
-const importRegexp = /^\s*(?:import|export)[\s\S]*?['"`](\S*)['"`]/gm;
+const importRegexp = /^\s*import[\s\S]*?['"`](\S*)['"`]/gm;
+const exportRegexp = /^\s*export[\s\S]*?from\s*['"`](\S*)['"`]/gm;
 const dynamicImportRegexp = /import\(\s*['"`](.*)['"`]\s*\)/g;
 const requireRegexp = /require\(\s*['"`](.*)['"`]\s*\)/g;
 
@@ -51,6 +52,7 @@ function followDependencies(context, modulePath) {
 
     for (const relativeImport of iterAll(
         processImports(context, importRegexp, fileText),
+        processImports(context, exportRegexp, fileText),
         processImports(context, dynamicImportRegexp, fileText),
         processImports(context, requireRegexp, fileText),
     )) {
