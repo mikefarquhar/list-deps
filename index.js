@@ -3,7 +3,7 @@ const path = require('path');
 
 const singleLineCommentRegexp = /\/\/.*/g;
 const multiLineCommentRegexp = /\/\*[\s\S]*?\*\//g;
-const importRegexp = /(?:import|export)(?:[\s\S]*?from)?\s*['"](.*)['"]/g;
+const importRegexp = /^\s*(?:import|export)[\s\S]*?['"`](\S*)['"`]/gm;
 const dynamicImportRegexp = /import\(\s*['"`](.*)['"`]\s*\)/g;
 const requireRegexp = /require\(\s*['"`](.*)['"`]\s*\)/g;
 
@@ -71,20 +71,34 @@ function loadFile(context, modulePath) {
     }
 
     const relativePath = path.relative(context.rootDir, modulePath);
-    context.skippedModules.add(relativePath);
+    if (hasNoExtension(relativePath) || hasAllowedExtension(context, relativePath)) {
+        context.skippedModules.add(relativePath);
+    }
+
     return [modulePath, ''];
 }
 
-function* pathVariants({ extensions }, modulePath) {
-    yield modulePath;
+function* pathVariants(context, modulePath) {
+    if (hasAllowedExtension(context, modulePath)) {
+        yield modulePath;
+    }
 
-    for (const extension of extensions) {
+    for (const extension of context.extensions) {
         yield `${modulePath}.${extension}`;
     }
 
-    for (const extension of extensions) {
+    for (const extension of context.extensions) {
         yield `${modulePath}/index.${extension}`;
     }
+}
+
+function hasNoExtension(filePath) {
+    return path.basename(filePath).split('.').length <= 1
+}
+
+function hasAllowedExtension({ extensions }, filePath) {
+    const extension = path.basename(filePath).split('.').slice(1).join('.');
+    return extension.length > 0 && extensions.includes(extension);
 }
 
 function* iterAll(...iterables) {
