@@ -7,7 +7,7 @@ const listDeps = require('.');
 program
     .name('list-deps')
     .description('List imported JavaScript dependencies')
-    .version('0.1.2')
+    .version('0.1.3')
     .argument(
         '<root-file-path>',
         'Root file from which to search for dependencies',

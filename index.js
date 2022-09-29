@@ -22,6 +22,7 @@ function listDeps(rootFilePath, extensions = ['js']) {
         extensions,
         rootDir: path.dirname(path.resolve(rootFilePath)),
         skippedModules: new Set(),
+        visitedModules: new Set(),
         dependencies: new Set(),
     };
 
@@ -39,8 +40,13 @@ function listDeps(rootFilePath, extensions = ['js']) {
 }
 
 function followDependencies(context, modulePath) {
-    const [filePath, fileText] = loadFile(context, modulePath);
+    if (context.visitedModules.has(modulePath)) {
+        return;
+    }
 
+    context.visitedModules.add(modulePath);
+
+    const [filePath, fileText] = loadFile(context, modulePath);
     const currentFolder = path.dirname(filePath);
 
     for (const relativeImport of iterAll(

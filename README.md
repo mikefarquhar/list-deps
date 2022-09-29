@@ -1,6 +1,6 @@
 # list-deps
 
-Naiive CLI/method to list dependencies referenced in source files.
+Naive CLI/method to list dependencies referenced in source files.
 
 Install:
 ```bash
